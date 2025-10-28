@@ -2,7 +2,6 @@
 import { defuFn } from 'defu'
 
 const inlineConfig = {
-  "titleSuffix": "",
   "nuxt": {}
 }
 

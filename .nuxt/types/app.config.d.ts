@@ -8,7 +8,6 @@ declare global {
 }
 
 declare const inlineConfig = {
-  "titleSuffix": "",
   "nuxt": {}
 }
 type ResolvedAppConfig = Defu<typeof inlineConfig, []>

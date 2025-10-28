@@ -1,6 +1,6 @@
 
 import type { DefineComponent, SlotsType } from 'vue'
-type IslandComponent<T extends DefineComponent> = T & DefineComponent<{}, {refresh: () => Promise<void>}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, SlotsType<{ fallback: { error: unknown } }>>
+type IslandComponent<T> = DefineComponent<{}, {refresh: () => Promise<void>}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, SlotsType<{ fallback: { error: unknown } }>> & T
 
 type HydrationStrategies = {
   hydrateOnVisible?: IntersectionObserverInit | true
@@ -11,20 +11,44 @@ type HydrationStrategies = {
   hydrateWhen?: boolean
   hydrateNever?: true
 }
-type LazyComponent<T> = (T & DefineComponent<HydrationStrategies, {}, {}, {}, {}, {}, {}, { hydrated: () => void }>)
+type LazyComponent<T> = DefineComponent<HydrationStrategies, {}, {}, {}, {}, {}, {}, { hydrated: () => void }> & T
 
 
 export const BlocksLogo: typeof import("../app/components/blocks/logo.vue")['default']
-export const MenusFooterNav: typeof import("../app/components/menus/FooterNav.vue")['default']
-export const MenusEcosystemmenu: typeof import("../app/components/menus/ecosystemmenu.vue")['default']
-export const MenusMobilesearch: typeof import("../app/components/menus/mobilesearch.vue")['default']
-export const MenusSidebarnav: typeof import("../app/components/menus/sidebarnav.vue")['default']
-export const MenusTopmenu: typeof import("../app/components/menus/topmenu.vue")['default']
-export const RelatedArticle: typeof import("../app/components/related/article.vue")['default']
-export const RelatedRelatedposts: typeof import("../app/components/related/relatedposts.vue")['default']
+export const FeaturesArchived: typeof import("../app/components/features/archived.vue")['default']
+export const FeaturesBookmarks: typeof import("../app/components/features/bookmarks.vue")['default']
+export const FeaturesLists: typeof import("../app/components/features/lists.vue")['default']
+export const FeaturesStarred: typeof import("../app/components/features/starred.vue")['default']
+export const ListsAddItemDialog: typeof import("../app/components/lists/AddItemDialog.vue")['default']
+export const ListsListDashboard: typeof import("../app/components/lists/ListDashboard.vue")['default']
+export const ListsListItemCard: typeof import("../app/components/lists/ListItemCard.vue")['default']
+export const ListsAddBookmark: typeof import("../app/components/lists/add-bookmark.vue")['default']
+export const ListsAddList: typeof import("../app/components/lists/add-list.vue")['default']
+export const ListsBookmark: typeof import("../app/components/lists/bookmark.vue")['default']
+export const ListsListsettings: typeof import("../app/components/lists/listsettings.vue")['default']
+export const ListsUpdateBookmark: typeof import("../app/components/lists/update-bookmark.vue")['default']
+export const ListsUpdateList: typeof import("../app/components/lists/update-list.vue")['default']
+export const ListsWishlist: typeof import("../app/components/lists/wishlist.vue")['default']
+export const MediaPlayer: typeof import("../app/components/media/MediaPlayer.vue")['default']
+export const MenusLowernav: typeof import("../app/components/menus/lowernav.vue")['default']
+export const PartialsAddtolist: typeof import("../app/components/partials/addtolist.vue")['default']
+export const PartialsCreateListBtn: typeof import("../app/components/partials/createListBtn.vue")['default']
+export const PartialsListBtn: typeof import("../app/components/partials/listBtn.vue")['default']
+export const RelatedAddBookmark: typeof import("../app/components/related/add-bookmark.vue")['default']
+export const RelatedAddList: typeof import("../app/components/related/add-list.vue")['default']
+export const RelatedBookmark: typeof import("../app/components/related/bookmark.vue")['default']
+export const RelatedList: typeof import("../app/components/related/list.vue")['default']
+export const RelatedLists: typeof import("../app/components/related/lists.vue")['default']
+export const RelatedListsListsettings: typeof import("../app/components/related/lists/listsettings.vue")['default']
+export const RelatedListsettings: typeof import("../app/components/related/listsettings.vue")['default']
+export const RelatedRelatedlists: typeof import("../app/components/related/relatedlists.vue")['default']
 export const RelatedRelatedproducts: typeof import("../app/components/related/relatedproducts.vue")['default']
 export const RelatedTopics: typeof import("../app/components/related/topics.vue")['default']
+export const RelatedUpdateBookmark: typeof import("../app/components/related/update-bookmark.vue")['default']
+export const RelatedUpdateList: typeof import("../app/components/related/update-list.vue")['default']
+export const RelatedWishlist: typeof import("../app/components/related/wishlist.vue")['default']
 export const Search: typeof import("../app/components/search/search.vue")['default']
+export const TasksTaskItem: typeof import("../app/components/tasks/TaskItem.vue")['default']
 export const NuxtWelcome: typeof import("../node_modules/nuxt/dist/app/components/welcome.vue")['default']
 export const NuxtLayout: typeof import("../node_modules/nuxt/dist/app/components/nuxt-layout")['default']
 export const NuxtErrorBoundary: typeof import("../node_modules/nuxt/dist/app/components/nuxt-error-boundary.vue")['default']
@@ -153,8 +177,6 @@ export const SfSwitch: typeof import("@storefront-ui/vue")['SfSwitch']
 export const SfTextarea: typeof import("@storefront-ui/vue")['SfTextarea']
 export const SfThumbnail: typeof import("@storefront-ui/vue")['SfThumbnail']
 export const SfTooltip: typeof import("@storefront-ui/vue")['SfTooltip']
-export const NuxtLinkLocale: typeof import("../node_modules/@nuxtjs/i18n/dist/runtime/components/NuxtLinkLocale")['default']
-export const SwitchLocalePathLink: typeof import("../node_modules/@nuxtjs/i18n/dist/runtime/components/SwitchLocalePathLink")['default']
 export const NuxtPage: typeof import("../node_modules/nuxt/dist/pages/runtime/page")['default']
 export const NoScript: typeof import("../node_modules/nuxt/dist/head/runtime/components")['NoScript']
 export const Link: typeof import("../node_modules/nuxt/dist/head/runtime/components")['Link']
@@ -166,18 +188,41 @@ export const Head: typeof import("../node_modules/nuxt/dist/head/runtime/compone
 export const Html: typeof import("../node_modules/nuxt/dist/head/runtime/components")['Html']
 export const Body: typeof import("../node_modules/nuxt/dist/head/runtime/components")['Body']
 export const NuxtIsland: typeof import("../node_modules/nuxt/dist/app/components/nuxt-island")['default']
-export const NuxtRouteAnnouncer: typeof import("../node_modules/nuxt/dist/app/components/server-placeholder")['default']
 export const LazyBlocksLogo: LazyComponent<typeof import("../app/components/blocks/logo.vue")['default']>
-export const LazyMenusFooterNav: LazyComponent<typeof import("../app/components/menus/FooterNav.vue")['default']>
-export const LazyMenusEcosystemmenu: LazyComponent<typeof import("../app/components/menus/ecosystemmenu.vue")['default']>
-export const LazyMenusMobilesearch: LazyComponent<typeof import("../app/components/menus/mobilesearch.vue")['default']>
-export const LazyMenusSidebarnav: LazyComponent<typeof import("../app/components/menus/sidebarnav.vue")['default']>
-export const LazyMenusTopmenu: LazyComponent<typeof import("../app/components/menus/topmenu.vue")['default']>
-export const LazyRelatedArticle: LazyComponent<typeof import("../app/components/related/article.vue")['default']>
-export const LazyRelatedRelatedposts: LazyComponent<typeof import("../app/components/related/relatedposts.vue")['default']>
+export const LazyFeaturesArchived: LazyComponent<typeof import("../app/components/features/archived.vue")['default']>
+export const LazyFeaturesBookmarks: LazyComponent<typeof import("../app/components/features/bookmarks.vue")['default']>
+export const LazyFeaturesLists: LazyComponent<typeof import("../app/components/features/lists.vue")['default']>
+export const LazyFeaturesStarred: LazyComponent<typeof import("../app/components/features/starred.vue")['default']>
+export const LazyListsAddItemDialog: LazyComponent<typeof import("../app/components/lists/AddItemDialog.vue")['default']>
+export const LazyListsListDashboard: LazyComponent<typeof import("../app/components/lists/ListDashboard.vue")['default']>
+export const LazyListsListItemCard: LazyComponent<typeof import("../app/components/lists/ListItemCard.vue")['default']>
+export const LazyListsAddBookmark: LazyComponent<typeof import("../app/components/lists/add-bookmark.vue")['default']>
+export const LazyListsAddList: LazyComponent<typeof import("../app/components/lists/add-list.vue")['default']>
+export const LazyListsBookmark: LazyComponent<typeof import("../app/components/lists/bookmark.vue")['default']>
+export const LazyListsListsettings: LazyComponent<typeof import("../app/components/lists/listsettings.vue")['default']>
+export const LazyListsUpdateBookmark: LazyComponent<typeof import("../app/components/lists/update-bookmark.vue")['default']>
+export const LazyListsUpdateList: LazyComponent<typeof import("../app/components/lists/update-list.vue")['default']>
+export const LazyListsWishlist: LazyComponent<typeof import("../app/components/lists/wishlist.vue")['default']>
+export const LazyMediaPlayer: LazyComponent<typeof import("../app/components/media/MediaPlayer.vue")['default']>
+export const LazyMenusLowernav: LazyComponent<typeof import("../app/components/menus/lowernav.vue")['default']>
+export const LazyPartialsAddtolist: LazyComponent<typeof import("../app/components/partials/addtolist.vue")['default']>
+export const LazyPartialsCreateListBtn: LazyComponent<typeof import("../app/components/partials/createListBtn.vue")['default']>
+export const LazyPartialsListBtn: LazyComponent<typeof import("../app/components/partials/listBtn.vue")['default']>
+export const LazyRelatedAddBookmark: LazyComponent<typeof import("../app/components/related/add-bookmark.vue")['default']>
+export const LazyRelatedAddList: LazyComponent<typeof import("../app/components/related/add-list.vue")['default']>
+export const LazyRelatedBookmark: LazyComponent<typeof import("../app/components/related/bookmark.vue")['default']>
+export const LazyRelatedList: LazyComponent<typeof import("../app/components/related/list.vue")['default']>
+export const LazyRelatedLists: LazyComponent<typeof import("../app/components/related/lists.vue")['default']>
+export const LazyRelatedListsListsettings: LazyComponent<typeof import("../app/components/related/lists/listsettings.vue")['default']>
+export const LazyRelatedListsettings: LazyComponent<typeof import("../app/components/related/listsettings.vue")['default']>
+export const LazyRelatedRelatedlists: LazyComponent<typeof import("../app/components/related/relatedlists.vue")['default']>
 export const LazyRelatedRelatedproducts: LazyComponent<typeof import("../app/components/related/relatedproducts.vue")['default']>
 export const LazyRelatedTopics: LazyComponent<typeof import("../app/components/related/topics.vue")['default']>
+export const LazyRelatedUpdateBookmark: LazyComponent<typeof import("../app/components/related/update-bookmark.vue")['default']>
+export const LazyRelatedUpdateList: LazyComponent<typeof import("../app/components/related/update-list.vue")['default']>
+export const LazyRelatedWishlist: LazyComponent<typeof import("../app/components/related/wishlist.vue")['default']>
 export const LazySearch: LazyComponent<typeof import("../app/components/search/search.vue")['default']>
+export const LazyTasksTaskItem: LazyComponent<typeof import("../app/components/tasks/TaskItem.vue")['default']>
 export const LazyNuxtWelcome: LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/welcome.vue")['default']>
 export const LazyNuxtLayout: LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/nuxt-layout")['default']>
 export const LazyNuxtErrorBoundary: LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/nuxt-error-boundary.vue")['default']>
@@ -306,8 +351,6 @@ export const LazySfSwitch: LazyComponent<typeof import("@storefront-ui/vue")['Sf
 export const LazySfTextarea: LazyComponent<typeof import("@storefront-ui/vue")['SfTextarea']>
 export const LazySfThumbnail: LazyComponent<typeof import("@storefront-ui/vue")['SfThumbnail']>
 export const LazySfTooltip: LazyComponent<typeof import("@storefront-ui/vue")['SfTooltip']>
-export const LazyNuxtLinkLocale: LazyComponent<typeof import("../node_modules/@nuxtjs/i18n/dist/runtime/components/NuxtLinkLocale")['default']>
-export const LazySwitchLocalePathLink: LazyComponent<typeof import("../node_modules/@nuxtjs/i18n/dist/runtime/components/SwitchLocalePathLink")['default']>
 export const LazyNuxtPage: LazyComponent<typeof import("../node_modules/nuxt/dist/pages/runtime/page")['default']>
 export const LazyNoScript: LazyComponent<typeof import("../node_modules/nuxt/dist/head/runtime/components")['NoScript']>
 export const LazyLink: LazyComponent<typeof import("../node_modules/nuxt/dist/head/runtime/components")['Link']>
@@ -319,6 +362,5 @@ export const LazyHead: LazyComponent<typeof import("../node_modules/nuxt/dist/he
 export const LazyHtml: LazyComponent<typeof import("../node_modules/nuxt/dist/head/runtime/components")['Html']>
 export const LazyBody: LazyComponent<typeof import("../node_modules/nuxt/dist/head/runtime/components")['Body']>
 export const LazyNuxtIsland: LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/nuxt-island")['default']>
-export const LazyNuxtRouteAnnouncer: LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/server-placeholder")['default']>
 
 export const componentNames: string[]

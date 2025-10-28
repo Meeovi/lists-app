@@ -1,0 +1,1 @@
+export { default } from "file:///C:/Users/Basti/Documents/My_Websites/Handmade_Sites/Javascript-Projects/Nuxt-Projects/Meeovi_Framework/Ecosystem/lists-app/node_modules/@nuxt/vite-builder/dist/runtime/vite-node.mjs"
