@@ -93,7 +93,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import uploadFiles from '#shared/app/composables/uploadFiles';
+import uploadFiles from '~//composables/uploadFiles';
 import updateList from '~/app/composables/lists/updateList';
 
 const route = useRoute();

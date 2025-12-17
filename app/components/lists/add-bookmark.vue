@@ -1,144 +1,52 @@
 <template>
-    <div>
-        <v-row justify="center">
-            <v-dialog v-model="dialog" :scrim="false" transition="dialog-bottom-transition">
-                <template v-slot:activator="{ props }">
-                    <v-btn v-bind="props">
-                        <v-icon start icon="fas:fa fa-plus"></v-icon>Create Bookmark
-                    </v-btn>
-                </template>
-                <v-card>
-                    <form @submit.prevent="createActivityAndRefresh">
-                        <v-card>
-                            <v-card-text>
-                                <v-row>
-                                    <v-col cols="6"><v-text-field v-model="bookmarkData.name" id="bookmarkName"
-                                            label="Bookmark Name*" required /></v-col>
-                                    <v-col cols="6"><v-text-field v-model="bookmarkData.url" id="bookmarkUrl"
-                                            label="Bookmark Url*" required /></v-col>
-                                    <v-col cols="6">
-                                        <v-select v-model="bookmarkData.type" label="What type of bookmark is this?"
-                                            :items="['Website', 'Password']" />
-                                    </v-col>
-                                    <v-col cols="6">
-                                        <v-select v-model="bookmarkData.status"
-                                            label="Is this bookmark public or private?"
-                                            :items="['Public', 'Private']" />
-                                    </v-col>
-                                    <v-col cols="12">
-                                        <v-file-input @change="handleImageUpload" clearable density="compact"
-                                            prepend-icon="fas:fa fa-image" accept="image/*" label="Image"
-                                            variant="solo-inverted" />
-                                    </v-col>
-                                    <v-col cols="12"><v-textarea v-model="bookmarkData.note" label="Note"
-                                            variant="outlined"></v-textarea></v-col>
-                                </v-row>
-                            </v-card-text>
-                            <v-divider class="mt-12"></v-divider>
-                            <v-card-actions>
-                                <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
-                                    Close
-                                </v-btn>
-                                <v-spacer></v-spacer>
-                                <v-btn color="blue-darken-1" variant="text" type="submit" @click="reset = false">
-                                    Reset
-                                </v-btn>
-                                <v-btn color="blue-darken-1" variant="text" type="submit" @click="createNewBookmark">
-                                    Create Bookmark
-                                </v-btn>
-                            </v-card-actions>
-                        </v-card>
-                    </form>
-                </v-card>
-            </v-dialog>
-        </v-row>
-    </div>
+  <v-row justify="center">
+    <v-dialog v-model="dialog" :scrim="false" transition="dialog-bottom-transition">
+      <template v-slot:activator="{ props }">
+        <v-btn v-bind="props" class="rightAddBtn">
+          <v-icon start icon="fas:fa fa-plus"></v-icon>Create a Bookmark
+        </v-btn>
+      </template>
+      <v-card class="b-1">
+        <v-card-title>
+          <h3>Create New Bookmark</h3>
+        </v-card-title>
+
+        <v-card-text>
+          <div v-if="formError" class="error">{{ formError }}</div>
+          <div v-else-if="formSuccess" class="success">{{ formSuccess }}</div>
+          <form @submit.prevent="submitForm">
+            <DirectusFormElement v-for="field in websiteFields" :key="field.field" :field="field" v-model="form[field.field]" />
+            <v-btn type="submit">Submit</v-btn>
+          </form>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+  </v-row>
 </template>
 
-<script>
-    export default {
-        methods: {
-            reset() {
-                this.$refs.form.reset()
-            },
-        },
-    }
-</script>
-
 <script setup>
-    import {
-        ref
-    } from 'vue';
-    import {
-        useRoute,
-        useRouter
-    } from 'vue-router';
-    import uploadFiles from '#shared/app/composables/uploadFiles';
-    import createBookmark from '~/app/composables/bookmarks/createBookmark';
-    import {
-        useUserStore
-    } from '~/stores/user'
+import { ref } from 'vue'
+import DirectusFormElement from '#shared/app/components/ui/forms/DirectusFormElement.vue'
+import { useDirectusForm } from '#shared/app/composables/globals/useDirectusForm'
 
-    const userStore = useUserStore()
+const dialog = ref(false)
+const { $directus, $readFieldsByCollection } = useNuxtApp()
 
-    const userDisplayName = computed(() => {
-        return userStore.user?.name || userStore.user?.username || 'User'
-    })
+const { data, error } = await useAsyncData('websites', async () => {
+  return $directus.request($readFieldsByCollection('websites'))
+})
 
-    const router = useRouter();
+// guard against undefined/null data.value and empty arrays
+if (error.value || data.value == null || (data.value?.length ?? 0) === 0) {
+  console.error(error)
+  throw createError({
+    statusCode: 404,
+    statusMessage: 'Bookmark not found'
+  })
+}
 
-    const bookmarkData = ref({
-        name: '',
-        url: '',
-        type: '',
-        status: '',
-        image: '',
-        note: '',
-        coverFile: null,
-        username: userDisplayName,
-    })
+const websiteFields = data
 
-    const dialog = ref(false);
-    const location = ref('bottom');
-
-    const imageFile = ref(null);
-
-    // Emit event for parent component updates
-    const emit = defineEmits(['bookmark-created']);
-
-    const handleImageUpload = (event) => {
-        imageFile.value = event.target.files[0];
-    };
-
-    const createNewBookmark = async () => {
-        try {
-            // Upload files if any
-            const uploadedFiles = await uploadFiles({
-                imageFile: imageFile.value,
-            });
-
-            // Update bookmark data with uploaded files
-            if (uploadedFiles) {
-                bookmarkData.value.image = uploadedFiles.imageId;
-            }
-
-            // Create the bookmark with space relationship
-            const bookmark = await createBookmark(bookmarkData.value);
-
-            console.log('Created Bookmark:', bookmark);
-
-            // Emit event to refresh parent component
-            emit('bookmark-created', bookmark);
-
-            // Close dialog and reset form
-            dialog.value = false;
-            reset();
-
-            // Optional: Redirect to the space page
-            router.push(`/commerce/lists/`);
-        } catch (error) {
-            console.error('Error creating bookmark:', error);
-            // Add error handling here
-        }
-    };
+// use composable for form handling (validation, submit, provide context)
+const { form, formError, formSuccess, submitForm } = useDirectusForm('websites', websiteFields, { clearOnSuccess: true, closeDialogRef: dialog })
 </script>

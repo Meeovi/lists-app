@@ -2,10 +2,10 @@
   <div>
     <v-dialog v-model="dialogOpen" justify="center">
       <template v-slot:activator="{ props }">
-        <SfButton size="m" variant="tertiary" v-bind="props">
+        <v-btn size="m" variant="tertiary" v-bind="props">
           <SfIconFavorite size="m" />
           Add to list
-        </SfButton>
+        </v-btn>
       </template>
 
       <v-card max-width="500px">
@@ -58,10 +58,10 @@
     onMounted
   } from 'vue'
   import {
-    SfButton,
+    
     SfIconFavorite
   } from '@storefront-ui/vue'
-  import list from '../lists/lists.vue'
+  import list from '../features/lists.vue'
   import createlist from '../lists/add-list.vue'
 
   const loading = ref(false)

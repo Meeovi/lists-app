@@ -1,5 +1,12 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
+import { resolve } from 'path'
+
 export default defineNuxtConfig({
+  alias: {
+    '#departments': resolve(__dirname, '../departments-app'),
+    '#commerce': resolve(__dirname, '../commerce-app'),
+    '#social': resolve(__dirname, '../social-app'),
+  },
+
   compatibilityDate: '2025-07-15',
   devtools: {
     enabled: false
@@ -45,32 +52,7 @@ export default defineNuxtConfig({
     'assets/styles/styles.css',
   ],
 
-  modules: [
-    '@nuxt/image',
-    '@storefront-ui/nuxt',
-    'vuetify-nuxt-module',
-    '@pinia/nuxt',
-    '@vueuse/nuxt',
-  ],
-
-  vuetify: {
-    vuetifyOptions: {
-      icons: {
-        defaultSet: 'fa-svg',
-        svg: {
-          fa: {
-            libraries: [
-              [ /* default export? */ false, /* export name */ 'fas', /* library */ '@fortawesome/free-solid-svg-icons']
-            ]
-          }
-        },
-        sets: [{
-          name: 'mdi',
-          cdn: 'https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css'
-        }]
-      }
-    }
-  },
+  modules: [],
 
   runtimeConfig: {
     public: {

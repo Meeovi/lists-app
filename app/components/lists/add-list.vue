@@ -1,143 +1,57 @@
 <template>
-    <div>
-        <v-row justify="center">
-            <v-dialog v-model="dialog" :scrim="false" transition="dialog-bottom-transition">
-                <template v-slot:activator="{ props }">
-                    <v-btn v-bind="props" variant="text">
-                        <v-icon start icon="fas:fa fa-plus"></v-icon>Create List
-                    </v-btn>
-                </template>
-                <v-card>
-                    <form>
-                        <v-toolbar dark color="info">
-                            <v-btn icon dark @click="dialog = false">
-                                <v-icon icon="fas:fa fa-circle-xmark"></v-icon>
-                            </v-btn>
-                            <v-card-title>
-                                <span class="text-h6">Create a new List</span>
-                            </v-card-title>
-                        </v-toolbar>
-                        <v-card-text>
-                            <v-container>
-                                <v-row>
-                                    <v-col cols="12">
-                                        <v-text-field v-model="listData.name" label="List Name" required></v-text-field>
-                                    </v-col>
-                                    <v-col cols="6">
-                                        <v-select v-model="listData.type" label="Type"
-                                            :items="['List', 'Registry', 'Playlist', 'Todo']"></v-select>
-                                    </v-col>
-                                    <v-col cols="6">
-                                        <v-select v-model="listData.status" label="Status"
-                                            :items="['Public', 'Private']"></v-select>
-                                    </v-col>
-                                    <v-col cols="12">
-                                        <v-file-input @change="handleImageUpload" clearable density="compact"
-                                            prepend-icon="fas:fa fa-image" accept="image/*" label="Image for List"
-                                            variant="solo-inverted" />
-                                    </v-col>
-                                    <v-col cols="12">
-                                        <v-textarea v-model="listData.description"
-                                            label="List Description"></v-textarea>
-                                    </v-col>
-                                    <v-col cols="12">
-                                        <v-card title="Choose a Product for your List">
-                                            <v-card-text>
-                                                <v-text-field density="compact" variant="solo"
-                                                    label="Search Meeovi for products" append-inner-icon="fas:fa fa-search"
-                                                    single-line hide-details></v-text-field>
-                                                <div class="d-flex pa-4">
-                                                    <v-checkbox-btn v-model="includeFiles" class="pe-2" color="orange">
-                                                    </v-checkbox-btn>
-                                                    <!--<NuxtLink :to="`/product/${products.id}`">
-                                        <v-card class="ma-4" height="580" width="250" @click="toggle">
-                                            <NuxtImg loading="lazy" class="align-end text-white" height="280"
-                                                :src="`${products.featuredAsset.preview}`" :alt="products.name" cover />
+  <v-row justify="center">
+    <v-dialog v-model="dialog" :scrim="false" transition="dialog-bottom-transition">
+      <template v-slot:activator="{ props }">
+        <v-btn v-bind="props" class="rightAddBtn">
+          <v-icon start icon="fas:fa fa-plus"></v-icon>Create a List
+        </v-btn>
+      </template>
+      <v-card class="b-1">
+        <v-card-title>
+          <h3>Create New List</h3>
+        </v-card-title>
 
-                                            <v-card-title class="pt-4">
-                                                {{ products.name }}
-                                            </v-card-title>
-
-                                            <v-card-text>
-                                                <div>Sku: {{ products.variants.sku }}</div>
-                                            </v-card-text>
-
-                                            <v-card-actions>
-                                                <v-card-title>$ {{ products.variants.price }}
-                                                </v-card-title>
-                                            </v-card-actions>
-                                            <div class="d-flex fill-height align-center justify-center">
-                                                <v-scale-transition>
-                                                    <v-icon v-if="isSelected" color="white" size="48"
-                                                        icon="mdi-close-circle-outline"></v-icon>
-                                                </v-scale-transition>
-                                            </div>
-                                        </v-card>
-                                    </NuxtLink>-->
-                                                </div>
-                                            </v-card-text>
-                                        </v-card>
-                                    </v-col>
-                                </v-row>
-                            </v-container>
-                            <small>*indicates required field</small>
-                        </v-card-text>
-                        <v-divider class="mt-12"></v-divider>
-                        <v-card-actions>
-                            <v-btn color="blue-darken-1" variant="text" type="submit" @click="reset = false">
-                                Reset
-                            </v-btn>
-                            <v-btn color="blue-darken-1" variant="text" type="submit" @click="createNewList">
-                                Create
-                            </v-btn>
-                        </v-card-actions>
-                    </form>
-                </v-card>
-            </v-dialog>
-        </v-row>
-    </div>
+        <v-card-text>
+          <div v-if="formError" class="error">{{ formError }}</div>
+          <div v-else-if="formSuccess" class="success">{{ formSuccess }}</div>
+          <form @submit.prevent="submitForm">
+            <DirectusFormElement v-for="field in listFields" :key="field.field" :field="field" v-model="form[field.field]" />
+            <v-btn type="submit">Submit</v-btn>
+          </form>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+  </v-row>
 </template>
 
 <script setup>
-    import {
-        ref
-    } from 'vue';
-    import {
-        useRouter
-    } from 'vue-router';
-    import uploadFiles from '#shared/app/composables/uploadFiles';
-    import createList from '../../composables/lists/createList';
+import { ref, computed } from 'vue'
+import DirectusFormElement from '#shared/app/components/ui/forms/DirectusFormElement.vue'
+import { useDirectusForm } from '#shared/app/composables/globals/useDirectusForm'
 
-    const listData = ref({
-        name: '',
-        type: '',
-        status: '',
-        description: '',
-        coverFile: null,
-    })
+const dialog = ref(false)
+const { $directus, $readFieldsByCollection } = useNuxtApp()
 
-    const dialog = ref(false);
-    const includeFiles = ref(true);
-    const enabled = ref(false);
+const { data, error } = await useAsyncData('listsFields', async () => {
+  return $directus.request($readFieldsByCollection('lists'))
+})
 
-    const imageFile = ref(null);
+// normalize response: Directus may return { data: [...] } or an array directly
+const listFields = computed(() => {
+  const resp = data?.value
+  return resp?.data ?? resp ?? []
+})
 
-    const handleImageUpload = (event) => {
-        imageFile.value = event.target.files[0];
-    };
+// guard against undefined/null and empty arrays
+if (error.value || listFields.value == null || listFields.value.length === 0) {
+  console.error(error)
+  throw createError({
+    statusCode: 404,
+    statusMessage: 'List not found'
+  })
+}
 
-    const createNewList = async () => {
-        try {
-            const uploadedFiles = await uploadFiles({
-                imageFile: imageFile.value,
-            });
 
-            listData.value.image = uploadedFiles.imageId;
-
-            const list = await createList(listData.value);
-            console.log('Created List:', list);
-        } catch (error) {
-            console.error('Error creating list:', error);
-        }
-    };
+// use composable for form handling (validation, submit, provide context)
+const { form, formError, formSuccess, submitForm } = useDirectusForm('lists', listFields, { clearOnSuccess: true, closeDialogRef: dialog })
 </script>

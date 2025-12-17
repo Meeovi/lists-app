@@ -32,7 +32,12 @@
     return $directus.request($readItems('lists', {
       fields: ['*', {
         '*': ['*']
-      }]
+      }],
+      filter: {
+        status: {
+          _eq: 'Public'
+        }
+      },
     }))
   })
 </script>
